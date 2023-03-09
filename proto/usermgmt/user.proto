@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package usermgmt;
+
+option go_package = "pkg/manabuf/usermgmt;upb";
+
+message User {
+  string user_id = 1;
+  string email = 2;
+}
+
+service UserService {
+  rpc CreateUser(User) returns (User);
+}
