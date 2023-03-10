@@ -16,7 +16,7 @@ func (userRepo *UserRepo) GetByUserID(ctx context.Context, db database.QueryExec
 	fields := database.GetFieldNames(user)
 
 	stmt := `SELECT %s FROM %s WHERE %s = $1`
-	stmt = fmt.Sprintf(stmt, strings.Join(fields, ","), "userid", user.TableName())
+	stmt = fmt.Sprintf(stmt, strings.Join(fields, ","), UserTableUserIDColumn, user.TableName())
 
 	row := db.QueryRow(ctx, stmt, userID)
 
@@ -32,9 +32,25 @@ func (userRepo *UserRepo) GetByEmail(ctx context.Context, db database.QueryExece
 	fields := database.GetFieldNames(user)
 
 	stmt := `SELECT %s FROM %s WHERE %s = $1`
-	stmt = fmt.Sprintf(stmt, strings.Join(fields, ","), "email", user.TableName())
+	stmt = fmt.Sprintf(stmt, strings.Join(fields, ","), UserTableEmailColumn, user.TableName())
 
 	row := db.QueryRow(ctx, stmt, email)
+
+	if err := row.Scan(database.GetScanFields(user, fields)...); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (userRepo *UserRepo) GetByOrganizationID(ctx context.Context, db database.QueryExecer, organizationID field.String) (entity.User, error) {
+	user := &User{}
+	fields := database.GetFieldNames(user)
+
+	stmt := `SELECT %s FROM %s WHERE %s = $1`
+	stmt = fmt.Sprintf(stmt, strings.Join(fields, ","), UserTableOrganizationIDColumn, user.TableName())
+
+	row := db.QueryRow(ctx, stmt, organizationID)
 
 	if err := row.Scan(database.GetScanFields(user, fields)...); err != nil {
 		return nil, err

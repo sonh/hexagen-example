@@ -18,6 +18,9 @@ func (user NullUser) UserID() field.String {
 func (user NullUser) Email() field.String {
 	return field.NewNullString()
 }
+func (user NullUser) OrganizationID() field.String {
+	return field.NewNullString()
+}
 
 // ComapareUserValues compare values of two entities
 func ComapareUserValues(user1 User, user2 User) error {
@@ -26,6 +29,8 @@ func ComapareUserValues(user1 User, user2 User) error {
 		return errors.New("UserID is not equal")
 	case user1.Email().String() != user2.Email().String():
 		return errors.New("Email is not equal")
+	case user1.OrganizationID().String() != user2.OrganizationID().String():
+		return errors.New("OrganizationID is not equal")
 	}
 	return nil
 }
@@ -47,4 +52,12 @@ func (users Users) Emails() []field.String {
 		emails = append(emails, user.Email())
 	}
 	return emails
+}
+
+func (users Users) OrganizationIDs() []field.String {
+	organizationIDs := make([]field.String, 0, len(users))
+	for _, user := range users {
+		organizationIDs = append(organizationIDs, user.OrganizationID())
+	}
+	return organizationIDs
 }

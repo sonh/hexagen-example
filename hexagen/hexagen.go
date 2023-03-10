@@ -270,8 +270,8 @@ type InterfaceMethodDecl struct {
 
 // genDecl processes one declaration clause.
 func (f *File) genDecl(node ast.Node) bool {
-	decl, ok := node.(*ast.GenDecl)
-	if !ok || decl.Tok != token.TYPE {
+	genDecl, ok := node.(*ast.GenDecl)
+	if !ok || genDecl.Tok != token.TYPE {
 		// We only care about type declarations.
 		// ex:
 		// 	type User interface {}
@@ -287,9 +287,9 @@ func (f *File) genDecl(node ast.Node) bool {
 	// If the type and value are both missing, we carry down the type (and value,
 	// but the "go/types" package takes care of that).*/
 
-	interfaceDecls := make([]InterfaceDecl, 0, len(decl.Specs))
+	interfaceDecls := make([]InterfaceDecl, 0, len(genDecl.Specs))
 
-	for _, spec := range decl.Specs {
+	for _, spec := range genDecl.Specs {
 		typeSpec := spec.(*ast.TypeSpec) // Guaranteed to succeed as this is TypeSpec.
 
 		if typeSpec.Name.Name != f.typeName {
@@ -357,9 +357,7 @@ func (g *Generator) Printf(format string, args ...interface{}) {
 // parsePackage exits if there is an error.
 func (g *Generator) parsePackage(patterns []string, tags []string) {
 	cfg := &packages.Config{
-		Mode: packages.NeedName | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax,
-		// TODO: Need to think about constants in test files. Maybe write type_string_test.go
-		// in a separate pass? For later.
+		Mode:       packages.NeedName | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax,
 		Tests:      false,
 		BuildFlags: []string{fmt.Sprintf("-tags=%s", strings.Join(tags, " "))},
 	}
@@ -406,7 +404,6 @@ func (g *Generator) addPackage(pkg *packages.Package) {
 
 // generateMock produces the String method for the named type.
 func (g *Generator) generateMock(typeName string) {
-
 	interfaceDecls := make([]InterfaceDecl, 0, 100)
 
 	for _, file := range g.pkg.files {
@@ -756,7 +753,7 @@ func (g *Generator) generateEntRepo(typeName string) {
 			g.Printf("fields := database.GetFieldNames(%s)\n", strings.ToLower(interfaceDecl.Name))
 			g.Printf("\n")
 			g.Printf("\tstmt := `SELECT %s FROM %s WHERE %s = $1`\n", "%s", "%s", "%s")
-			g.Printf("\tstmt = fmt.Sprintf(stmt, strings.Join(fields, \",\"), \"%s\", %s.TableName())\n", strings.ToLower(interfaceMethod.Name), strings.ToLower(interfaceDecl.Name))
+			g.Printf("\tstmt = fmt.Sprintf(stmt, strings.Join(fields, \",\"), %sTable%sColumn, %s.TableName())\n", interfaceDecl.Name, interfaceMethod.Name, strings.ToLower(interfaceDecl.Name))
 			g.Printf("\n")
 			g.Printf("\trow := db.QueryRow(ctx, stmt, %s)\n", LowerCaseFirstLetter(interfaceMethod.Name))
 			g.Printf("\n")

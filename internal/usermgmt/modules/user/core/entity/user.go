@@ -13,6 +13,9 @@ import (
 type User interface {
 	UserID() field.String
 	Email() field.String
+	OrganizationID() field.String
+
+	HasOrganizationID
 }
 
 func ValidateUser(user User) error {
@@ -20,43 +23,5 @@ func ValidateUser(user User) error {
 		return errors.New("email can not be empty")
 	}
 
-	DelegateUser(NullUser{}, WithUserEmail(field.NewNullString()))
 	return nil
-}
-
-// //go:generate hexagen ent-proto --type=User --outpkg=upb -o ../../../../../../pkg/manabuf/usermgmt/
-
-type user struct {
-	userID field.String
-	email  field.String
-}
-
-func (user *user) UserID() field.String {
-	return user.userID
-}
-func (user *user) Email() field.String {
-	return user.email
-}
-
-type UserOpt func(*user)
-
-func WithUserEmail(email field.String) UserOpt {
-	return func(u *user) {
-		u.email = email
-	}
-}
-
-func DelegateUser(userToBeDelegate User, userFieldsToDelegate ...UserOpt) User {
-	user := &user{}
-
-	if userToBeDelegate != nil {
-		user.userID = userToBeDelegate.UserID()
-		user.email = userToBeDelegate.Email()
-	}
-
-	for _, userFieldToDelegate := range userFieldsToDelegate {
-		userFieldToDelegate(user)
-	}
-
-	return user
 }

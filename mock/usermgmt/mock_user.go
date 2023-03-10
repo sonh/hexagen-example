@@ -21,6 +21,9 @@ func (user ValidUser) UserID() field.String {
 func (user ValidUser) Email() field.String {
 	return field.NewString(fmt.Sprintf("email+%s@example.com", user.RandomID))
 }
+func (user ValidUser) OrganizationID() field.String {
+	return field.NewRandomString(64)
+}
 
 // UserHasEmptyUserID keeps all valid attributes but override with an invalid UserID
 type UserHasEmptyUserID struct {
@@ -41,5 +44,16 @@ type UserHasEmptyEmail struct {
 var _ entity.User = (*UserHasEmptyEmail)(nil)
 
 func (user UserHasEmptyEmail) Email() field.String {
+	return field.NewString("")
+}
+
+// UserHasEmptyOrganizationID keeps all valid attributes but override with an invalid OrganizationID
+type UserHasEmptyOrganizationID struct {
+	ValidUser
+}
+
+var _ entity.User = (*UserHasEmptyOrganizationID)(nil)
+
+func (user UserHasEmptyOrganizationID) OrganizationID() field.String {
 	return field.NewString("")
 }
