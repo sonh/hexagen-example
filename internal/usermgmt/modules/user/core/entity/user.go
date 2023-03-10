@@ -6,8 +6,8 @@ import (
 	"backend/internal/usermgmt/pkg/field"
 )
 
-//go:generate hexagen ent-mock --type=User -o ../../../../../../mock/usermgmt
 //go:generate hexagen ent-impl --type=User -o .
+//go:generate hexagen ent-mock --type=User -o ../../../../../../mock/usermgmt
 //go:generate hexagen ent-repo --type=User -o ../../adapter/postgres
 
 type User interface {

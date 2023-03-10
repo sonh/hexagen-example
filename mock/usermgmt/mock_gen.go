@@ -1,5 +1,1 @@
 package entity
-
-func RandomString() {
-
-}

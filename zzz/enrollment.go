@@ -9,18 +9,20 @@ type EnrollmentStatus int
 const (
 	EnrollmentStatusPotential EnrollmentStatus = iota
 	EnrollmentStatusEnrolled
-	EnrollmentStatusGraduated
 
-	EnrollmentStatusWithdraw
 	EnrollmentStatusNonPotential
 	EnrollmentStatusLOA
+	EnrollmentStatusGraduated
+	EnrollmentStatusWithdraw
 )
 
 /*func (enrollmentStatus EnrollmentStatus) String() string {
+	//...
+	//...
 	return "EnrollmentStatus"
 }*/
 
 func main() {
 	fmt.Println()
-	fmt.Println(EnrollmentStatusLOA)
+	fmt.Println(EnrollmentStatusPotential)
 }
