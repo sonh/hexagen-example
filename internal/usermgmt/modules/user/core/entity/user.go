@@ -14,8 +14,6 @@ type User interface {
 	UserID() field.String
 	Email() field.String
 	OrganizationID() field.String
-
-	HasOrganizationID
 }
 
 func ValidateUser(user User) error {
